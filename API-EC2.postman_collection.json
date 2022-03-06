@@ -1,0 +1,388 @@
+{
+	"info": {
+		"_postman_id": "4253ed1d-2a5b-45a1-b8d9-44c38db7c44d",
+		"name": "API-EC2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Publico",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = JSON.parse(responseBody)",
+											"",
+											"if (jsonData.data) {",
+											"    pm.environment.set(\"accessToken\", jsonData.data.accessToken)",
+											"    pm.environment.set(\"refreshToken\", jsonData.data.refreshToken)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/auth/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Healthcheck",
+					"item": [
+						{
+							"name": "Healthcheck",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/healthcheck",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"healthcheck"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Usuario",
+					"item": [
+						{
+							"name": "Registrar Usuario",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let firstName = pm.environment.replaceIn(\"{{$randomFirstName}}\");",
+											"let lastName = pm.environment.replaceIn(\"{{$randomLastName}}\");",
+											"let email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@test.com`",
+											"",
+											"pm.environment.set(\"firstName\", firstName)",
+											"pm.environment.set(\"lastName\", lastName)",
+											"pm.environment.set(\"email\", email)"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = JSON.parse(responseBody)",
+											"",
+											"pm.environment.set(\"userId\", jsonData.data.id)",
+											"pm.environment.set(\"verificationCode\", jsonData.data.verificationCode)"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"firstName\": \"{{firstName}}\",\n    \"lastName\": \"{{lastName}}\",\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"passwordRepeat\": \"{{passwordRepeat}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/users",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verificar Email",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/users/verify/:id/:verificationcode",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"verify",
+										":id",
+										":verificationcode"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{userId}}"
+										},
+										{
+											"key": "verificationcode",
+											"value": "{{verificationCode}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reenviar Email Verificacao",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = JSON.parse(responseBody)",
+											"",
+											"if (jsonData.data) {",
+											"    pm.environment.set(\"userId\", jsonData.data.id)",
+											"    pm.environment.set(\"verificationCode\", jsonData.data.verificationCode)",
+											"}",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/users/resendverify",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"resendverify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Solicitar Mudanca Senha",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = JSON.parse(responseBody)",
+											"",
+											"if (jsonData.data) {",
+											"    pm.environment.set(\"userId\", jsonData.data.id)",
+											"    pm.environment.set(\"resetPasswordCode\", jsonData.data.resetPasswordCode)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/users/forgotpassword/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"forgotpassword",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Alterar Senha",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"{{password2}}\",\n    \"passwordRepeat\": \"{{password2}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/users/resetpassword/:id/:resetPasswordCode",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"resetpassword",
+										":id",
+										":resetPasswordCode"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{userId}}"
+										},
+										{
+											"key": "resetPasswordCode",
+											"value": "{{resetPasswordCode}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Privado",
+			"item": [
+				{
+					"name": "Usuario",
+					"item": [
+						{
+							"name": "Usuario Conectado Headers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const newAccessToken = responseHeaders['x-access-token']",
+											"",
+											"// caso tenha sido gerado um novo token de acesso ",
+											"// essa seria a nova forma de acessasr sem usar cookies",
+											"if (newAccessToken) {",
+											"    pm.environment.set('accessToken', newAccessToken)",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-refresh",
+										"value": "{{refreshToken}}",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/api/users/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Usuario Conectado Cookies",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/users/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
