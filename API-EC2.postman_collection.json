@@ -106,8 +106,11 @@
 										"exec": [
 											"let jsonData = JSON.parse(responseBody)",
 											"",
-											"pm.environment.set(\"userId\", jsonData.data.id)",
-											"pm.environment.set(\"verificationCode\", jsonData.data.verificationCode)"
+											"if (jsonData.data) {",
+											"    pm.environment.set(\"userId\", jsonData.data.id)",
+											"    pm.environment.set(\"verificationCode\", jsonData.data.verificationCode)",
+											"",
+											"}"
 										],
 										"type": "text/javascript"
 									}
